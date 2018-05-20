@@ -5,16 +5,16 @@
     </head>
     <body>
       <div class="home">
-        <a href="http://127.0.0.1:8080/">Home</a>
+        <a href="http://localhost:8080/">Home</a>
       </div>
       <div class="header">
         <h1>Login Page</h1>
         <p>Resize the browser window to see the responsive effect.</p>
       </div>
       <div class="topnav">
-        <a href="http://127.0.0.1:8080/">Home</a>
-        <a href="http://127.0.0.1:8080/login">Login</a>
-        <a href="http://127.0.0.1:8080/setupSecurity">Setup Security</a>
+        <a href="http://localhost:8080/">Home</a>
+        <a href="http://localhost:8080/login">Login</a>
+        <a href="http://localhost:8080/setupSecurity">Setup Security</a>
         <a href="#">Link</a>
       </div>
       <div class="row">

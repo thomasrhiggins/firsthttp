@@ -7,8 +7,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"strings"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -54,8 +54,7 @@ func makeEntity() {
 		l6      string
 		l7      string
 		l8      string
-
-		l9 string
+		l9      string
 	}
 	var S SecurityRoles
 	S.admin = "/admin"
@@ -69,7 +68,7 @@ func makeEntity() {
 	S.l3 = "/Teachers"
 	S.l4 = "/Students"
 
-	fmt.Printf(S.orgname)
+	// fmt.Printf(S.[2])
 }
 
 func main() {
@@ -96,10 +95,13 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("path", r.URL.Path)
 	fmt.Println("scheme", r.URL.Scheme)
 	fmt.Println(r.Form["url_long"])
-	for k, v := range r.Form {
-		fmt.Println("key:", k)
-		fmt.Println("val:", strings.Join(v, ""))
-	}
+	/*
+		 for k, v := range r.Form {
+			fmt.Println("key:", k)
+			fmt.Println("val:", strings.Join(v, ""))
+		}
+	*/
+
 	//fmt.Fprintf(w, "Hello astaxie!") // write data to response
 	//fmt.Fprintf(w, userlist(r.URL.Path[1:], ))
 	mongo()
@@ -111,9 +113,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get request method
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles("static/login.gtpl")
+
 		t.Execute(w, nil)
 	} else {
-		r.ParseForm()
+		// r.ParseForm()
 		// logic part of log in
 		fmt.Println("username:", r.Form["username"])
 		fmt.Println("password:", r.Form["password"])
@@ -127,7 +130,7 @@ func setupSecurity(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("static/setupSecurity.gtpl")
 		t.Execute(w, nil)
 	} else {
-		r.ParseForm()
+		//	r.ParseForm()
 		// logic part of log in
 		fmt.Println("username:", r.Form["username"])
 		fmt.Println("password:", r.Form["password"])
