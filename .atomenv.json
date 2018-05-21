@@ -1,3 +1,4 @@
+
 {
   "env": {
     "GOPATH": "$HOME/go:$ATOM_PROJECT_PATH"
