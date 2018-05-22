@@ -144,7 +144,7 @@ func main() {
 	r.HandleFunc("/postsecuritydata", PostFormDataHandler)
 	// This will serve files under http://localhost:8000/static/<filename>
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
-
+	//	r.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	srv := &http.Server{
 		Handler: r,
 		Addr:    "localhost:8080",
