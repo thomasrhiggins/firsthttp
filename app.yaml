@@ -1,0 +1,17 @@
+runtime: go
+api_version: go1
+
+handlers:
+
+
+
+
+##  static_files: favicon.ico
+  #upload: favicon\.ico
+
+- url: /static
+  static_dir: static
+
+# All URLs are handled by the Go application script this order is last as it will overwrite static if first
+- url: /.*
+  script: firstatom

@@ -6,10 +6,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
+	"google.golang.org/appengine" // Required external App Engine library
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	//	mgo "gopkg.in/mgo.v2"
@@ -135,31 +134,33 @@ func main() {
 
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
-	r := mux.NewRouter()
+	//r := mux.NewRouter()
 	// r.Handle("/", SayHelloWorld)
-	r.HandleFunc("/getformdata", GetFormDataHandler)
-	r.HandleFunc("/", IndexHandler)
-	r.HandleFunc("/setupSecurity", SetupSecurity)
-	r.HandleFunc("/login", Login)
-	r.HandleFunc("/postsecuritydata", PostFormDataHandler)
+	http.HandleFunc("/getformdata", GetFormDataHandler)
+	http.HandleFunc("/", IndexHandler)
+	http.HandleFunc("/setupSecurity", SetupSecurity)
+	http.HandleFunc("/login", Login)
+	http.HandleFunc("/postsecuritydata", PostFormDataHandler)
 	// This will serve files under http://localhost:8000/static/<filename>
 
 	//r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	// http.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
+	appengine.Main()
 	// r.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(Dir))))
 
 	//	r.PathPrefix("static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
+	/* Replace everything below with apppengnine and chane calls above to from r. to http to suit the appengine model.
+		srv := &http.Server{
+			Handler: r,
+			Addr:    "localhost:8080",
+			// Good practice: enforce timeouts for servers you create!
+			WriteTimeout: 15 * time.Second,
+			ReadTimeout:  15 * time.Second,
+		}
 
-	srv := &http.Server{
-		Handler: r,
-		Addr:    "localhost:8080",
-		// Good practice: enforce timeouts for servers you create!
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
-
-	log.Fatal(srv.ListenAndServe())
+		log.Fatal(srv.ListenAndServe())
+	}*/
 }
 func mongo(o SecurityRoles) {
 	fmt.Println("158 mongo called")

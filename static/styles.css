@@ -46,7 +46,7 @@ input[type=password] {
 
 /* Change color on hover */
 .home a:hover {
-    background-color: #ddd;
+    background-color: #aaa;
     color: black;
 }
 
