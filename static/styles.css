@@ -55,10 +55,22 @@ input[type=password] {
     overflow: hidden;
     background-color: #213cff;
 }
-
+#alignright {
+    float: right;
+    
+}
 /* Style the topnav links */
 .topnav a {
     float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav.right a {
+    float: right;
     display: block;
     color: #f2f2f2;
     text-align: center;
