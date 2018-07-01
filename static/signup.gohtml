@@ -1,22 +1,9 @@
-<html>
-    <head>
-      <link rel="stylesheet" href="static/styles.css">
-
-    </head>
-    <body>
-      <div class="home">
-        <a href="http://localhost:8080/">Home</a>
-      </div>
+{{template "header" .}}
       <div class="header">
         <h1>Login Page</h1>
         <p>Resize the browser window to see the responsive effect.</p>
       </div>
-      <div class="topnav">
-        <a href="http://localhost:8080/">Home</a>
-        <a href="http://localhost:8080/login">Login</a>
-        <a href="http://localhost:8080/setupSecurity">Setup Security</a>
-        <a href="#">Link</a>
-      </div>
+      {{template "topnav"}}
       <div class="row">
         <div class="column side">
           <h2>left Side</h2>
@@ -36,8 +23,10 @@
           <!-- commenting out text -->
           </form>
 
-            <form action="/setupSecurity" method="post">
-                <label> Username:  <input type="text" name="username"/></label>
+            <form action="/postSignup" method="post">
+              <label> Email:  <input type="text" name="email"/></label>
+                <label> First Name:  <input type="text" name="fname"/></label>
+                <label> Last Name:  <input type="text" name="lname"/></label>
                 <label> Password:  <input type="password" name="password"/></label>
                 <input type="submit" value="Login">
 
@@ -46,5 +35,4 @@
       </div>
 
 
-    </body>
-</html>
+  {{template "footer"}}

@@ -1,0 +1,23 @@
+{{define "header" }}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <base href="/">
+  <link  rel="stylesheet"  type="text/css" href="/static/styles.css">
+
+</head>
+
+<body>
+  <div class="home">
+    <a href="/">Home</a>
+    <a id=alignright href="/login">{{.Email}}</a>
+    {{if .NotLoggedIn}}
+    <a id=alignright href="/signup">{{.Message}}</a>
+    {{else}}
+    <a id=alignright href="/">{{.Message}}</a>
+    {{end}}
+  </div>
+
+{{end}}
