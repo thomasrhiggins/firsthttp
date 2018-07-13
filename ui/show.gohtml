@@ -1,7 +1,5 @@
 
-
-
-{{template "templates/header"}}
+{{template "header" .}}
  <html>
     <head>
       <link rel="stylesheet" href="static/styles.css">
@@ -12,15 +10,10 @@
         <a href="http://localhost:8080/">Home</a>
       </div>
       <div class="header">
-        <h1>Security Setup cant understnad the why the headers are working Page</h1>
+        <h1>Show templates the why how external pages can work</h1>
         <p>Set and adjust Security Roles </p>
       </div>
-      <div class="topnav">
-        <a href="http://localhost:8080/">Home</a>
-        <a href="http://localhost:8080/login">Login</a>
-        <a href="#">Link</a>
-        <a href="#">Link</a>
-      </div>
+
       <div class="row">
         <div class="column side">
           <h2>left Side</h2>
@@ -31,7 +24,7 @@
           <p>Middle row: this is where you setup security for your organisation .</p>
           <p>Setup state city and school name and then the levels of permission you need </p>
 
-          <form action="http://localhost:8080/postsecuritydata" method="post">
+          <form action="http://postsecuritydata" method="post">
               <label> Organistaion name :  <input type="text" name="orgname" value="NSW Dept of Education"/></label>
               <label> Country :  <input type="text" name="country" value=  "AU" /></label>
               <label> State :  <input type="text" name="state" value='NSW'/></label>

@@ -4,11 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
+	"time" //for handler testing
 
 	"google.golang.org/appengine" // Required external App Engine library
-	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/user"
 )
 
@@ -41,10 +44,14 @@ type SecurityRoles struct {
 
 var UEmail string = "Login"
 var tpl *template.Template
+var tlates *template.Template
+var newtlates *template.Template
+var FileToDisplay string = "ui/show.gohtml"
 
 // template_path := filepath.Join(filepath.Dir(root_path), "templates")
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*"))
+	log.Println("tpl name is :", tpl.DefinedTemplates())
 }
 
 //var SetupsecurityTmp = parseTemplate("/static/setupSecurity.gtpl")
@@ -52,6 +59,8 @@ func init() {
 //listTmpl   = parseTemplate("list.html")
 // 	return listTmpl.Execute(w, r, books)
 func main() {
+	var format string = time.RFC1123
+	th := timeHandler(format)
 
 	var dir string
 
@@ -66,11 +75,11 @@ func main() {
 	http.HandleFunc("/setupSecurity", SetupSecurity)
 	http.HandleFunc("/login", Login)
 	http.HandleFunc("/signup", Signup)
-	http.HandleFunc("/postSignup", PostSignupFormDataHandler)
+	http.HandleFunc("/postSignup", PostSignupFormMessage) //postSignup
 
 	http.HandleFunc("/postsecuritydata", PostSecurityFormDataHandler)
-	http.HandleFunc("/testtemplate", TestTemplateHandler)
-
+	http.Handle("/test", th)
+	//	http.Handle("/tParse", templatehandler)
 	// This will serve files under http://localhost:8000/static/<filename>
 
 	//r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
@@ -105,9 +114,20 @@ func SetUserContext(r *http.Request) Person {
 func SetupSecurity(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get request method
 	if r.Method == "GET" {
-		// tpl.ExecuteTemplate(w, "setupSecurity.gohtml", SetUserContext(r))
-		t, _ := template.ParseFiles("ui/setupSecurity.gohtml")
-		t.Execute(w, nil)
+		tpl.ExecuteTemplate(w, "setupSecurity.gohtml", SetUserContext(r))
+		//tpl, err := template.ParseFiles("templates/setupSecurity.gohtml")
+
+		/*	if err != nil {
+				log.Println("toms parsefiles temlpate error ", err)
+				panic(err)
+			}
+			tpl.Execute(w, nil)
+			if err != nil {
+				log.Println("toms execute error ", err)
+
+				panic(err)
+			}
+		*/
 		// not included in olde script 	w.Write([]byte(fmt.Sprintf(html)))
 	} else {
 		r.ParseForm()
@@ -203,64 +223,81 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func PostSignupFormMessage(w http.ResponseWriter, r *http.Request) {
+	log.Println("method:", r.Method) //get request method
+	if r.Method == "POST" {
+		log.Println("Post Signup Form execution - file to display ", FileToDisplay)
+		FileToDisplay = "ui/postSignupMessage.gohtml"
+		log.Println("Post Signup Form execution - file to display ", FileToDisplay)
+		FileTemplateParseHandler(FileToDisplay) //
+		//tpl.ExecuteTemplate(w, "signup.gohtml", SetUserContext(r))
+		//	tpl, _ := template.ParseFiles("/templates/signup.old.gohtml")
+		//	tpl.Execute(w, SetUserContext(r))
+	} else {
+		r.ParseForm()
+		// logic part of log in
+
+	}
+}
+
 func TestTemplateHandler(w http.ResponseWriter, r *http.Request) {
+	tx := template.New("crap")                                                       // Create a template.
+	tx, _ = template.ParseFiles("ui/show.gohtml", "templates/header-include.gohtml") // Parse template file.
+	log.Println("Tx name is :", tx.DefinedTemplates())
+	pattern := filepath.Join("templates/", "*.gohtml")
+	log.Println("template pattern ", pattern)
+	tx.ExecuteTemplate(w, "show.gohtml", SetUserContext(r)) //tx.Execute(w, SetUserContext(r)) // merge.
 
-	tpl.ExecuteTemplate(w, "index.gohtml", SetUserContext(r))
+	//tpl.ExecuteTemplate(w, "index.gohtml", SetUserContext(r))
 }
-func PostSignupFormDataHandler(w http.ResponseWriter, r *http.Request) {
 
-	r.ParseForm()
-
-	p1 := Person{
-		Fname: r.Form.Get("fname"),
-		Lname: r.Form.Get("lname"),
-		Email: r.Form.Get("email"),
+func timeHandler(format string) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		tm := time.Now().Format(format)
+		w.Write([]byte("The time is: " + tm))
+		tpl.Execute(w, "index.gohtml")
 	}
-	log.Printf("person is ", p1.Fname)
-	//uname := r.Form.Get["username"]
-	//fmt.Fprintf(w, " %s\n  username:", r.Form["username"])
-	//fmt.Fprintf(w, "%s\n password:", r.Form["password"])
-	//fmt.Fprintf(w, "%s\n ")
-	//func Current(c context.Context) *User
+	return http.HandlerFunc(fn)
 }
-func PostSecurityFormDataHandler(w http.ResponseWriter, r *http.Request) {
 
-	r.ParseForm()
-	// [START new_context]
-	ctx := appengine.NewContext(r)
-	// [END new_context]
-	s1 := SecurityRoles{
+func FileTemplateParseHandler(FileToDisplay string) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		//fileToDisplay =  ui/show.gohtml//	var fileToAddToTemplate string
+		log.Println("FileTemplateParseHandler(FileToDisplay", FileToDisplay)
+		var allTemplateFiles []string
+		allTemplateFiles = append(allTemplateFiles, FileToDisplay)
+		log.Println(" ")
+		log.Println("Template string files inital load ", allTemplateFiles)
+		log.Println(" ")
+		files, err := ioutil.ReadDir("./templates")
+		if err != nil {
+			fmt.Println(err)
 
-		Admin:   r.Form.Get("admin"),
-		Orgname: r.Form.Get("orgname"),
-		Country: r.Form.Get("country"),
-		State:   r.Form.Get("state"),
-		City:    r.Form.Get("city"),
-		Sname:   r.Form.Get("sname"),
-		L1:      r.Form.Get("l1"),
-		L2:      r.Form.Get("l2"),
-		L3:      r.Form.Get("l3"),
-		L4:      r.Form.Get("l4"),
-		L5:      r.Form.Get("l5"),
-		L6:      r.Form.Get("l6"),
-		L7:      r.Form.Get("l7"),
-		L8:      r.Form.Get("l8"),
-		L9:      r.Form.Get("l9"),
+		}
+		for _, file := range files {
+			filename := file.Name()
+			if strings.HasSuffix(filename, ".gohtml") {
+				allTemplateFiles = append(allTemplateFiles, "templates/"+filename)
+
+			}
+
+			log.Println("Template files build ", allTemplateFiles)
+		}
+
+		tlates := template.New("crap1")
+
+		tlates, err = template.ParseFiles(allTemplateFiles...)
+		if err != nil {
+			log.Println("firstemplate load failed -----------", err)
+
+		}
+		log.Println("final defined templates ", tlates.DefinedTemplates())
+
+		log.Println("final defined FILETODISPLAY  ", FileToDisplay)
+		log.Println("Base = ", Base(FileToDisplay))
+		FileToDisplay = Base(FileToDisplay)
+		tlates.ExecuteTemplate(w, FileToDisplay, SetUserContext(r))
+
 	}
-	key := datastore.NewIncompleteKey(ctx, "securityroles", nil)
-	// [END new_key]
-	// [START add_post]
-	key, err := datastore.Put(ctx, datastore.NewIncompleteKey(ctx, "securityroles", nil), &s1)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	var s2 SecurityRoles
-	if err = datastore.Get(ctx, key, &s2); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprintf(w, "Stored and retrieved the School named %q", s2.Sname)
+	return http.HandlerFunc(fn)
 }
