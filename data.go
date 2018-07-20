@@ -1,18 +1,16 @@
 // Data Stored convallis
 package main
-import (
 
+import (
 	"fmt"
 
-	"log"
+	//"log"
 	"net/http"
 
-
-
-  "google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/datastore"
 
 	"google.golang.org/appengine" // Required external App Engine library
-//	"google.golang.org/appengine/user"
+	//	"google.golang.org/appengine/user"
 )
 
 func PostSecurityFormDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +18,7 @@ func PostSecurityFormDataHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	// [START new_context]
 	ctx := appengine.NewContext(r)
-	var tablename string = " "
+	var tablename string = "securityroles"
 
 	s1 := SecurityRoles{
 
@@ -55,7 +53,7 @@ func PostSecurityFormDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Stored and retrieved the School named %q", s2.Sname , " and State is ", s2.State)
+	fmt.Fprintf(w, "Stored and retrieved the School named %q", s2.Sname, " and State is ", s2.State)
 }
 
 func PostSignupFormDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,9 +65,9 @@ func PostSignupFormDataHandler(w http.ResponseWriter, r *http.Request) {
 		Lname: r.Form.Get("lname"),
 		Email: r.Form.Get("email"),
 	}
-	log.Printf("person is ", p1.Fname)
+	fmt.Fprintf(w, "person is ", p1.Fname)
 	//uname := r.Form.Get["username"]
-	//fmt.Fprintf(w, " %s\n  username:", r.Form["username"])
+	fmt.Fprintf(w, " %s\n  username:", r.Form["username"])
 	//fmt.Fprintf(w, "%s\n password:", r.Form["password"])
 	//fmt.Fprintf(w, "%s\n ")
 	//func Current(c context.Context) *User

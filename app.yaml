@@ -14,4 +14,4 @@ handlers:
 
 # All URLs are handled by the Go application script this order is last as it will overwrite static if first
 - url: /.*
-  script: firstatom
+  script: _go_app

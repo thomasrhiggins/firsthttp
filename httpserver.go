@@ -49,9 +49,11 @@ var newtlates *template.Template
 var FileToDisplay string = "ui/show.gohtml"
 
 // template_path := filepath.Join(filepath.Dir(root_path), "templates")
+
 func init() {
+
 	tpl = template.Must(template.ParseGlob("templates/*"))
-	log.Println("tpl name is :", tpl.DefinedTemplates())
+	log.Println("tpl name is :", tpl.DefinedTemplates(), "tpl.name = ", tpl.Name())
 }
 
 //var SetupsecurityTmp = parseTemplate("/static/setupSecurity.gtpl")
@@ -229,7 +231,24 @@ func PostSignupFormMessage(w http.ResponseWriter, r *http.Request) {
 		log.Println("Post Signup Form execution - file to display ", FileToDisplay)
 		FileToDisplay = "ui/postSignupMessage.gohtml"
 		log.Println("Post Signup Form execution - file to display ", FileToDisplay)
-		FileTemplateParseHandler(FileToDisplay) //
+
+		var tmpl = `<html>
+<head>
+    <title>Hello World HEader!</title>
+`
+		var ftds = template.Must(template.ParseFiles(FileToDisplay))
+		log.Println("tplates names is :", ftds.DefinedTemplates())
+		//tlates.AddParseTree(FileToDisplay, tpl.Tree)
+		log.Println("tpl name after pass tree :", ftds.DefinedTemplates())
+		err := ftds.ExecuteTemplate(w, "postSignup", SetUserContext(r))
+		if err != nil {
+			panic(err)
+		} // parsing of template string
+		//t.ExecuteTemplate(w, "index.gohtml", SetUserContext(r))
+		log.Println("this is tpl ", tmpl)
+		// t, _ := template.New(FileToDisplay) //setp 1
+		//t.Execute(w, "Hello World!")        //step 2t.execute()
+		//FileTemplateParseHandler(FileToDisplay) //
 		//tpl.ExecuteTemplate(w, "signup.gohtml", SetUserContext(r))
 		//	tpl, _ := template.ParseFiles("/templates/signup.old.gohtml")
 		//	tpl.Execute(w, SetUserContext(r))
