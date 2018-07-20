@@ -1,4 +1,4 @@
-package templmanager
+package main
 
 import (
 	"fmt"

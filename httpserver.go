@@ -16,7 +16,7 @@ import (
 	"google.golang.org/appengine" // Required external App Engine library
 	"google.golang.org/appengine/user"
 	// packages written by me
-	"templmanager"
+	//"templmanager"
 )
 
 type Person struct {
@@ -86,8 +86,8 @@ func main() {
 	var format string = time.RFC1123
 	th := timeHandler(format)
 	loadConfiguration("config.json")
-	templmanager.LoadTemplates()
-	var dir string
+	LoadTemplates()
+	//var dir string
 
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()

@@ -1,11 +1,10 @@
 package main
 
-import ("strings"
+import (
+	"strings"
 
 	"log"
-
-
-//	"google.golang.org/appengine" // Required external App Engine library
+	//	"google.golang.org/appengine" // Required external App Engine library
 	//	"google.golang.org/
 )
 
