@@ -2,11 +2,12 @@ package templmanager
 
 import (
 	"fmt"
-	"github.com/oxtoacart/bpool"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/oxtoacart/bpool"
 )
 
 var templates map[string]*template.Template

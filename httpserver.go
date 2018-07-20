@@ -1,18 +1,22 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os" //for handler testing
 	"path/filepath"
 	"strings"
-	"time" //for handler testing
+	"time"
 
 	"google.golang.org/appengine" // Required external App Engine library
 	"google.golang.org/appengine/user"
+	// packages written by me
+	"templmanager"
 )
 
 type Person struct {
@@ -42,6 +46,24 @@ type SecurityRoles struct {
 	L9      string
 }
 
+type UserData struct {
+	Name        string
+	City        string
+	Nationality string
+}
+
+type SkillSet struct {
+	Language string
+	Level    string
+}
+
+type SkillSets []*SkillSet
+
+type Configuration struct {
+	LayoutPath  string
+	IncludePath string
+}
+
 var UEmail string = "Login"
 var tpl *template.Template
 var tlates *template.Template
@@ -52,7 +74,7 @@ var FileToDisplay string = "ui/show.gohtml"
 
 func init() {
 
-	tpl = template.Must(template.ParseGlob("templates/*"))
+	tpl = template.Must(template.ParseGlob("template/*"))
 	log.Println("tpl name is :", tpl.DefinedTemplates(), "tpl.name = ", tpl.Name())
 }
 
@@ -63,7 +85,8 @@ func init() {
 func main() {
 	var format string = time.RFC1123
 	th := timeHandler(format)
-
+	loadConfiguration("config.json")
+	templmanager.LoadTemplates()
 	var dir string
 
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
@@ -83,6 +106,9 @@ func main() {
 	http.Handle("/test", th)
 	//	http.Handle("/tParse", templatehandler)
 	// This will serve files under http://localhost:8000/static/<filename>
+	http.HandleFunc("/", index)
+	http.HandleFunc("/aboutme", aboutMe)
+	http.HandleFunc("/skillset", skillSet)
 
 	//r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
 	// http.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -319,4 +345,41 @@ func FileTemplateParseHandler(FileToDisplay string) http.Handler {
 
 	}
 	return http.HandlerFunc(fn)
+}
+func loadConfiguration(fileName string) {
+	file, _ := os.Open(fileName)
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		log.Println("error:", err)
+	}
+	log.Println("layout path: ", configuration.LayoutPath)
+	log.Println("include path: ", configuration.IncludePath)
+	templmanager.SetTemplateConfig(configuration.LayoutPath, configuration.IncludePath)
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	err := templmanager.RenderTemplate(w, "index.tmpl", nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func aboutMe(w http.ResponseWriter, r *http.Request) {
+	userData := &UserData{Name: "Asit Dhal", City: "Bhubaneswar", Nationality: "Indian"}
+	err := templmanager.RenderTemplate(w, "aboutme.tmpl", userData)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func skillSet(w http.ResponseWriter, r *http.Request) {
+	skillSets := SkillSets{&SkillSet{Language: "Golang", Level: "Beginner"},
+		&SkillSet{Language: "C++", Level: "Advanced"},
+		&SkillSet{Language: "Python", Level: "Advanced"}}
+	err := templmanager.RenderTemplate(w, "skillset.tmpl", skillSets)
+	if err != nil {
+		log.Println(err)
+	}
 }
